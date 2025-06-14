@@ -75,12 +75,6 @@ resource "aws_route_table_association" "public_rt_association" {
   subnet_id      = aws_subnet.public_subnet[count.index].id
   route_table_id = aws_route_table.public_rt.id
 
-  tags = {
-    Name    = "test-vpc-public_rt_association_${count.index + 1}"
-    Project = var.project
-    Env     = var.env
-  }
-
   depends_on = [aws_route_table.public_rt, aws_subnet.public_subnet]
 }
 
@@ -127,12 +121,6 @@ resource "aws_route_table_association" "private_rt_association" {
   subnet_id      = aws_subnet.private_subnet[count.index].id
   route_table_id = aws_route_table.nat_rt.id
 
-  tags = {
-    Name    = "test-vpc-private_rt_association_${count.index + 1}"
-    Project = var.project
-    Env     = var.env
-  }
-
   depends_on = [aws_route_table.nat_rt, aws_subnet.private_subnet]
 }
 
@@ -148,8 +136,8 @@ resource "aws_s3_bucket" "vpc_flow_logs_bucket" {
 
 resource "random_string" "bucket_suffix" {
   length  = 8
-  special = false
-  upper   = false
+  special      = false
+  upper        = false
 }
 
 resource "aws_s3_bucket_policy" "vpc_flow_logs_policy" {
@@ -161,11 +149,11 @@ resource "aws_s3_bucket_policy" "vpc_flow_logs_policy" {
       {
         Sid       = "AWSLogDeliveryWrite"
         Effect    = "Allow"
-        Principal = {
+        Principal   = {
           Service = "delivery.logs.amazonaws.com"
         }
         Action    = ["s3:PutObject"]
-        Resource  = "${aws_s3_bucket.vpc_flow_logs_bucket.arn}/AWSLogs/*"
+        Resource = "${aws_s3_bucket.vpc_flow_logs_bucket.arn}/AWSLogs/*"
         Condition = {
           StringEquals = {
             "s3:x-amz-acl" = "bucket-owner-full-control"
@@ -175,11 +163,11 @@ resource "aws_s3_bucket_policy" "vpc_flow_logs_policy" {
       {
         Sid       = "AWSLogDeliveryAclCheck"
         Effect    = "Allow"
-        Principal = {
+        Principal   = {
           Service = "delivery.logs.amazonaws.com"
         }
         Action    = ["s3:GetBucketAcl"]
-        Resource  = aws_s3_bucket.vpc_flow_logs_bucket.arn
+        Resource = aws_s3_bucket.vpc_flow_logs_bucket.arn
       }
     ]
   })
