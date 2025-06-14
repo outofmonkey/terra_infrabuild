@@ -39,7 +39,11 @@ variable "cidr_block_private" {
     error_message = "All private subnet CIDR blocks must be valid."
   }
   validation {
-    condition     = alltrue([for cidr in var.cidr_block_private : cidrsubnet("10.100.0.0/16", 0, 0) == cidrsubnet(cidr, 0, 0)])
+    condition     = alltrue([
+      for cidr in var.cidr_block_private : contains([
+        for i in range(256) : cidrsubnet("10.100.0.0/16", 8, i)
+      ], cidr)
+    ])
     error_message = "All private subnet CIDR blocks must be within the VPC CIDR (10.100.0.0/16)."
   }
 }
